@@ -1,0 +1,6 @@
+[workspace]
+
+members = [
+  "lang-c",
+  "graphlang-parser"
+]
