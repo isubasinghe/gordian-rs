@@ -3,4 +3,4 @@
 members = [
   "lang-c",
   "graphlang-parser"
-]
+, "c-trans"]
