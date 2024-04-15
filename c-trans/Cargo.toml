@@ -8,3 +8,4 @@ edition = "2021"
 [dependencies]
 vir = { path = "../verus/source/vir" }
 lang-c = { path = "../lang-c" }
+clap = { version = "4.5.4", features = ["derive"] }

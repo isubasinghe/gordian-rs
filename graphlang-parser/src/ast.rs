@@ -1,9 +1,17 @@
 use std::sync::Arc;
+use core::ops::Range;
+
+pub struct Span<T> {
+    t: T,
+    loc: Range<usize>
+}
+
 
 pub enum UOpX {
 
 }
-pub type UOp = Arc<UOpX>;
+
+pub type UOp = Arc<Span<UOpX>>;
 
 pub enum BinOpX {
     Eq(Expr, Expr),
@@ -17,19 +25,19 @@ pub enum BinOpX {
     BWRSH(Expr, Expr)
 }
 
-pub type BinOp = Arc<BinOpX>;
+pub type BinOp = Arc<Span<BinOpX>>;
 
 pub enum TriOpX {
     PValid(Expr, Typ, Expr),
 }
 
-pub type TriOp = Arc<TriOpX>;
+pub type TriOp = Arc<Span<TriOpX>>;
 
 pub enum ExprX {
     ExprSymbol(Identifier),
     ExprNum(PrimTyp, Num),
 }
-pub type Expr = Arc<ExprX>;
+pub type Expr = Arc<Span<ExprX>>;
 
 pub enum Num {
     Signed(i64),
