@@ -1,6 +1,8 @@
 use std::sync::Arc;
+use std::cell::Cell;
 
 use lang_c::{ast::*, span::Node};
+use vir::func_to_air::FuncDefPhase;
 use crate::vir::*;
 
 
@@ -23,8 +25,19 @@ impl FnCtxt {
             _ => panic!("")
         };
 
-        println!("{:?}", param.node.declarator);
-        unimplemented!()
+        let decl = match param.node.declarator {
+            Some(idn) => idn.node.kind.node,
+            None => panic!("")
+        };
+
+        let ident = match decl {
+            DeclaratorKind::Identifier(ident) => ident.node.name,
+            _ => panic!("")
+        };
+
+        let param = ParamX{name: ident.into(), ty: typ};
+        Arc::new(param)
+
     }
 
     fn encode_stmt(&self) {
@@ -55,10 +68,22 @@ impl FnCtxt {
             let converted_param = self.get_param(param);
             params.push(converted_param);
         }
+
+        println!("{:?}", params);
     }
 }
 
-pub struct EncodeCtx {}
+pub struct EncodeCtx {
+    pub val: u32,
+    pub fns: Cell<Vec<FunctionDef>>
+}
+
+impl EncodeCtx {
+    pub fn new() -> EncodeCtx {
+        let fns = Cell::new(vec![]);
+        EncodeCtx { val: 0, fns }
+    }
+}
 
 pub fn from_typspec( nspec: Node<TypeSpecifier>) -> Typ {
     match nspec.node {
@@ -73,50 +98,50 @@ pub fn from_typspec( nspec: Node<TypeSpecifier>) -> Typ {
         _ => panic!("Not supported")
     }
 }
-impl EncodeCtx {
-    pub fn encode(&mut self, unit: TranslationUnit) {
-        let mut fn_to_encode = vec![];
-        for extdef in unit.0 {
-            match extdef.node {
-                ExternalDeclaration::Declaration(ndecl) => {
-                },
-                ExternalDeclaration::StaticAssert(nstat) => {
-                    panic!("not supported");
-                },
-                ExternalDeclaration::FunctionDefinition(nfunc) => {
-                    fn_to_encode.push(nfunc)
-                }
+pub fn encode(ctx: &mut EncodeCtx, unit: TranslationUnit) {
+    let mut fn_to_encode = vec![];
+    for extdef in unit.0 {
+        match extdef.node {
+            ExternalDeclaration::Declaration(ndecl) => {
+            },
+            ExternalDeclaration::StaticAssert(nstat) => {
+                panic!("not supported");
+            },
+            ExternalDeclaration::FunctionDefinition(nfunc) => {
+                fn_to_encode.push(nfunc)
             }
         }
-
-        for fndef in fn_to_encode {
-            self.encode_fn(fndef);
-        }
-    }
-    
-    pub fn get_typ(&self, specifiers: Vec<Node<DeclarationSpecifier>>) -> Typ {
-        match specifiers.len() {
-            0 => panic!("expected at least one"),
-            1 => {
-                match &specifiers[0].node {
-                    DeclarationSpecifier::TypeSpecifier(ntyspec) => from_typspec(ntyspec.clone()),
-                    _ => panic!("")
-                }
-            },
-            _ => panic!("not yet supported")
-        }
     }
 
-    pub fn encode_fn(&mut self, fndef: Node<FunctionDefinition>) {
-
-        let mut fnctx = FnCtxt::new();
-
-        fnctx.init_fn(fndef.clone());
-        if fndef.node.declarations.len() != 0 {
-            panic!("K&R style declarations are not supported");
-        }
-    }
-
-    pub fn encode_struct(&mut self) {
+    for fndef in fn_to_encode {
+        encode_fn(ctx, fndef);
     }
 }
+
+pub fn get_typ(ctx: &mut EncodeCtx, specifiers: Vec<Node<DeclarationSpecifier>>) -> Typ {
+    match specifiers.len() {
+        0 => panic!("expected at least one"),
+        1 => {
+            match &specifiers[0].node {
+                DeclarationSpecifier::TypeSpecifier(ntyspec) => from_typspec(ntyspec.clone()),
+                _ => panic!("")
+            }
+        },
+        _ => panic!("not yet supported")
+    }
+}
+
+pub fn encode_fn(ctx: &mut EncodeCtx, fndef: Node<FunctionDefinition>) {
+
+    let mut fnctx = FnCtxt::new();
+
+    if fndef.node.declarations.len() != 0 {
+        panic!("K&R style declarations are not supported");
+    }
+
+    fnctx.init_fn(fndef.clone());
+}
+
+pub fn encode_struct(ctx: &mut EncodeCtx) {
+}
+

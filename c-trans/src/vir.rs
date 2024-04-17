@@ -3,16 +3,18 @@ use std::sync::Arc;
 
 type Ident = Arc<String>;
 
+#[derive(Debug)]
 pub struct ParamX {
-    name: Ident,
-    ty: Typ
+    pub name: Ident,
+    pub ty: Typ
 }
 
 pub type Param = Arc<ParamX>;
 
 pub struct FunctionDefX {
-    params: Arc<Vec<Param>>,
-    rettype: Typ
+    pub params: Arc<Vec<Param>>,
+    pub stmt: Statement,
+    pub rettype: Typ
     
 }
 
@@ -34,10 +36,16 @@ pub enum TypX {
 
 pub type Typ = Arc<TypX>;
 
+#[derive(Debug)]
+pub enum ExprX {
+}
+
+pub type Expr = Arc<ExprX>;
 
 #[derive(Debug)]
 pub enum BinOpX {
-
+    Add(Expr, Expr),
+    Sub(Expr, Expr),
 }
 
 pub type BinOp = Arc<BinOpX>;
