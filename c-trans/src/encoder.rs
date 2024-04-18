@@ -2,7 +2,6 @@ use std::sync::Arc;
 use std::cell::Cell;
 
 use lang_c::{ast::*, span::Node};
-use vir::func_to_air::FuncDefPhase;
 use crate::vir::*;
 
 

@@ -6,7 +6,6 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-vir = { path = "../verus/source/vir" }
 lang-c = { path = "../lang-c" }
 clap = { version = "4.5.4", features = ["derive"] }
 viper = { git = "https://github.com/viperproject/prusti-dev.git", rev = "0d4a8d497ac1e540d48ef50a031d53b4e3ae36e2" }

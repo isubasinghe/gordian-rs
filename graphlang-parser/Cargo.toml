@@ -7,5 +7,4 @@ edition = "2021"
 
 [dependencies]
 winnow = "0.5.17"
-vir = { path = "../verus/source/vir" }
 
