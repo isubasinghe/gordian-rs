@@ -2,7 +2,7 @@ use std::sync::Arc;
 use std::cell::Cell;
 
 use lang_c::{ast::*, span::Node};
-use crate::vir::*;
+use crate::vir::{self, *};
 
 
 pub struct FnCtxt {
@@ -16,6 +16,10 @@ impl FnCtxt {
 
     fn get_fn_name(decl: Node<FunctionDefinition>) {
         let name = decl.node.specifiers;
+    }
+
+    fn typ_from_var(name: &str) -> Typ {
+        unimplemented!()
     }
 
     fn get_param(&self, param: Node<ParameterDeclaration>) -> Param {
@@ -39,10 +43,12 @@ impl FnCtxt {
 
     }
 
-    fn encode_stmt(&self) {
+
+    fn encode_stmt(&self, stmt: Node<lang_c::ast::Statement>) -> vir::Statement {
+        unimplemented!();
     }
 
-    pub fn init_fn(&mut self, decl: Node<FunctionDefinition>) {
+    pub fn init_fn(&mut self, decl: Node<FunctionDefinition>) -> FunctionDef {
 
         let typ = match &decl.node.specifiers[0].node {
             DeclarationSpecifier::TypeSpecifier(nty)  => from_typspec(nty.clone()),
@@ -68,18 +74,24 @@ impl FnCtxt {
             params.push(converted_param);
         }
 
-        println!("{:?}", params);
+        let vstmt = self.encode_stmt(decl.node.statement);
+
+        let mut fndef = FunctionDefX{name: Arc::new(ident.name), params: Arc::new(params), rettype: typ, stmt: vstmt};
+        Arc::new(fndef)
     }
 }
 
 pub struct EncodeCtx {
     pub val: u32,
-    pub fns: Cell<Vec<FunctionDef>>
+    pub fns: Arc<Vec<(FunctionDef, FnCtxt)>>
+}
+
+impl EncodeCtx {
 }
 
 impl EncodeCtx {
     pub fn new() -> EncodeCtx {
-        let fns = Cell::new(vec![]);
+        let fns = Arc::new(vec![]);
         EncodeCtx { val: 0, fns }
     }
 }
@@ -130,7 +142,7 @@ pub fn get_typ(ctx: &mut EncodeCtx, specifiers: Vec<Node<DeclarationSpecifier>>)
     }
 }
 
-pub fn encode_fn(ctx: &mut EncodeCtx, fndef: Node<FunctionDefinition>) {
+pub fn encode_fn(ctx: &mut EncodeCtx, fndef: Node<FunctionDefinition>) ->  (FunctionDef, FnCtxt){
 
     let mut fnctx = FnCtxt::new();
 
@@ -139,6 +151,8 @@ pub fn encode_fn(ctx: &mut EncodeCtx, fndef: Node<FunctionDefinition>) {
     }
 
     fnctx.init_fn(fndef.clone());
+
+    unimplemented!();
 }
 
 pub fn encode_struct(ctx: &mut EncodeCtx) {

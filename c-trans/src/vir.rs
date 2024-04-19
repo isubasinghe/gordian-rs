@@ -1,5 +1,10 @@
 use std::sync::Arc;
 
+#[derive(Debug)]
+pub struct Span<T> {
+    pub pos: usize,
+    pub t: T
+}
 
 type Ident = Arc<String>;
 
@@ -12,6 +17,7 @@ pub struct ParamX {
 pub type Param = Arc<ParamX>;
 
 pub struct FunctionDefX {
+    pub name: Ident,
     pub params: Arc<Vec<Param>>,
     pub stmt: Statement,
     pub rettype: Typ
@@ -38,6 +44,8 @@ pub type Typ = Arc<TypX>;
 
 #[derive(Debug)]
 pub enum ExprX {
+    BinOp(BinOp),
+    UOp(UOp),
 }
 
 pub type Expr = Arc<ExprX>;
@@ -58,10 +66,11 @@ pub type UOp = Arc<UOpX>;
 
 #[derive(Debug)]
 pub enum StatementX {
-    BinOp(BinOp),
-    UOp(UOp),
     Call(Ident),
-    Block(Statement)
+    Block(Statement),
+    Assign(Ident, Expr),
+    Return,
+    ReturnE(Expr)
 }
 
-pub type Statement = Arc<StatementX>;
+pub type Statement = Arc<Span<StatementX>>;

@@ -9,7 +9,9 @@ mod vir;
 mod vir_to_viper;
 mod tychk;
 use clap::Parser;
+use viper::Viper;
 use cli::*;
+use vir_to_viper::{encode_viper, ViperEncodeCtx};
 
 fn main() -> io::Result<()> {
     let config = Config::default();
@@ -23,7 +25,12 @@ fn main() -> io::Result<()> {
         Err(_) => panic!("")
     };
 
-
+    let mut v = Viper::new("");
+    let vctx = v.attach_current_thread();
+    let mut ast = vctx.new_ast_factory();
     
+    let mut vctx = ViperEncodeCtx::new(ctx, ast);
+    encode_viper(&mut vctx);
+
     Ok(())
 }
