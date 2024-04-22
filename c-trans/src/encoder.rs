@@ -43,9 +43,73 @@ impl FnCtxt {
 
     }
 
+    fn encode_binop(&self, binop: Box<Node<BinaryOperatorExpression>>) -> BinOp {
+        let lhs = self.encode_expr(binop.node.lhs);
+        let rhs = self.encode_expr(binop.node.rhs);
+
+        match binop.node.operator.node {
+            BinaryOperator::Plus => Arc::new(BinOpX::Add(lhs, rhs)),
+            BinaryOperator::Minus => Arc::new(BinOpX::Sub(lhs, rhs)),
+            _ => panic!("")
+        }
+    }
+
+    fn encode_expr(&self, expr: Node<lang_c::ast::Expression>) -> vir::Expr {
+        use lang_c::ast::Expression as E;
+        match expr.node {
+            E::Statement(estmt) => panic!(""),
+            E::VaArg(varg) => panic!(""),
+            E::Conditional(econd) => panic!(""),
+            E::Call(ecall) => panic!(""),
+            E::Cast(ecast) => panic!(""),
+            E::Comma(ec) => panic!(""),
+            E::Member(em) => panic!(""),
+            E::AlignOf(eal) => panic!(""),
+            E::Constant(econst) => panic!(""),
+            E::SizeOfTy(nty) => panic!(""),
+            E::OffsetOf(nof) => panic!(""),
+            E::SizeOfVal(ns) => panic!(""),
+            E::Identifier(nident) => panic!(""),
+            E::StringLiteral(nslit) => panic!(""),
+            E::UnaryOperator(nup) => panic!(""),
+            E::BinaryOperator(nbinop) => {
+                let binop = self.encode_binop(nbinop);
+                Arc::new(ExprX::BinOp(binop))
+            }
+            E::CompoundLiteral(ncompound) => panic!(""),
+            E::GenericSelection(ngn) => panic!(""),
+        }
+    }
 
     fn encode_stmt(&self, stmt: Node<lang_c::ast::Statement>) -> vir::Statement {
-        unimplemented!();
+        match stmt.node {
+            lang_c::ast::Statement::Break => panic!(""),
+            lang_c::ast::Statement::If(nif) => panic!(""),
+            lang_c::ast::Statement::For(nfor) => panic!(""),
+            lang_c::ast::Statement::Continue => panic!(""),
+            lang_c::ast::Statement::Return(nret) => {
+                match nret {
+                    Some(ne) => {
+                        let e = self.encode_expr(*ne); 
+                    }
+                    None => Arc::new(vir::StatementX::Return)
+                }
+            },
+            lang_c::ast::Statement::Compound(nc) => {
+                println!("{:?}", nc);
+                panic!("")
+            }
+            lang_c::ast::Statement::Asm(nasm) => panic!(""),
+            lang_c::ast::Statement::Goto(ngoto) => panic!(""),
+            lang_c::ast::Statement::DoWhile(ndo) => panic!(""),
+            lang_c::ast::Statement::Labeled(nlabelled) => panic!(""),
+            lang_c::ast::Statement::Switch(nswitch) => panic!(""),
+            lang_c::ast::Statement::Expression(nexpr) => {
+                println!("{:?}", nexpr);
+                panic!("");
+            },
+            lang_c::ast::Statement::While(nwhile) => panic!(""),
+        }
     }
 
     pub fn init_fn(&mut self, decl: Node<FunctionDefinition>) -> FunctionDef {
